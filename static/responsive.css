@@ -1,0 +1,216 @@
+/* ========== RESPONSIVE UTILITIES ========== */
+
+/* Hide/Show based on screen size */
+.hide-on-mobile {
+    display: block;
+}
+
+.hide-on-desktop {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none;
+    }
+    
+    .hide-on-desktop {
+        display: block;
+    }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.3rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    h6 { font-size: 0.9rem; }
+}
+
+/* Responsive Grid Gaps */
+@media (max-width: 768px) {
+    .row {
+        --bs-gutter-x: 1rem;
+    }
+}
+
+/* Responsive Container Padding */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        display: block;
+    }
+    
+    table {
+        width: 100%;
+        min-width: 600px;
+    }
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .modal-content {
+        border-radius: 10px;
+    }
+}
+
+/* Responsive Dropdowns */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: absolute;
+        transform: translate3d(0px, 40px, 0px) !important;
+    }
+}
+
+/* Touch-Friendly Buttons */
+@media (max-width: 768px) {
+    button,
+    .btn,
+    a.btn,
+    input[type="button"],
+    input[type="submit"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .nav-link {
+        padding: 10px 15px;
+    }
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive Forms */
+@media (max-width: 768px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 8px 12px;
+    }
+}
+
+/* Responsive Cards */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 15px;
+    }
+}
+
+/* Responsive Navigation */
+@media (max-width: 991px) {
+    .navbar-nav {
+        margin-top: 1rem;
+    }
+    
+    .nav-item {
+        margin: 5px 0;
+    }
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    footer .col-md-4 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    footer .social-links {
+        justify-content: center;
+    }
+}
+
+/* Responsive Product Grid */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive Cart */
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .cart-item img {
+        margin: 0 auto 15px;
+    }
+    
+    .cart-item .quantity-controls {
+        justify-content: center;
+    }
+}
+
+/* Responsive Checkout */
+@media (max-width: 768px) {
+    .checkout-form {
+        padding: 20px;
+    }
+    
+    .order-summary {
+        margin-top: 20px;
+    }
+}
+
+/* Landscape Optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        height: 300px;
+    }
+    
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+    
+    .categories,
+    .featured-products {
+        padding: 30px 0;
+    }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero {
+        background-attachment: scroll;
+    }
+}
+
+/* Responsive Animations */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
