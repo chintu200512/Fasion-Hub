@@ -43,3 +43,14 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = ''
     MAIL_PASSWORD = ''
+
+
+       # Upload settings
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    UPLOAD_FOLDER = 'static/images/products'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    
+    # Make sure upload directory exists
+    @staticmethod
+    def init_upload_folder():
+        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)

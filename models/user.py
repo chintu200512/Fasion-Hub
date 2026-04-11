@@ -30,6 +30,50 @@ class User:
             "wishlist": [],
             "orders": [],
             "created_at": datetime.utcnow(),
+            "is_admin": False  # Regular users are not admin by default
+        }
+        
+        collection.insert_one(user)
+        return user, "User created successfully"
+    
+    @classmethod
+    def authenticate(cls, email, password):
+        collection = cls.get_collection()
+        user = collection.find_one({"email": email})
+        if user and check_password_hash(user["password_hash"], password):
+            return user
+        return None
+    
+    # ... rest of your existing methods ...
+
+
+class User:
+    collection = None
+    
+    @classmethod
+    def get_collection(cls):
+        if cls.collection is None:
+            cls.collection = MongoDB.get_collection('users')
+        return cls.collection
+    
+    @classmethod
+    def create_user(cls, email, password, name, address=None, phone=None):
+        collection = cls.get_collection()
+        existing = collection.find_one({"email": email})
+        if existing:
+            return None, "Email already exists"
+        
+        user = {
+            "user_id": str(uuid.uuid4()),
+            "email": email,
+            "password_hash": generate_password_hash(password),
+            "name": name,
+            "address": address,
+            "phone": phone,
+            "cart": [],
+            "wishlist": [],
+            "orders": [],
+            "created_at": datetime.utcnow(),
             "is_admin": False
         }
         
