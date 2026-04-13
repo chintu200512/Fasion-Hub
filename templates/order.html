@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .orders-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    .order-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .order-number {
+        font-weight: 700;
+        color: #667eea;
+    }
+    .order-status {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .status-pending { background: #fef3c7; color: #d97706; }
+    .order-details {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    .order-details img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .order-info {
+        flex: 1;
+    }
+    .order-total {
+        font-weight: 700;
+        color: #e74c3c;
+    }
+</style>
+
+<div class="orders-container">
+    <h2 class="mb-4"><i class="fas fa-box"></i> My Orders</h2>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <div>
+                    <span class="order-number">{{ order.order_number }}</span>
+                    <br>
+                    <small class="text-muted">{{ order.order_date.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                </div>
+                <div>
+                    <span class="order-status status-{{ order.order_status }}">{{ order.order_status|upper }}</span>
+                </div>
+            </div>
+            
+            <div class="order-details">
+                <img src="{{ url_for('static', filename='uploads/' + order.image) if order.image else 'https://via.placeholder.com/80' }}" 
+                     alt="{{ order.product_name }}">
+                <div class="order-info">
+                    <h5>{{ order.product_name }}</h5>
+                    <p>Quantity: {{ order.quantity }} × ₹{{ order.price }}</p>
+                    <p class="text-muted small">Delivery to: {{ order.address[:100] }}</p>
+                </div>
+                <div class="order-total">
+                    ₹{{ "{:,.0f}".format(order.total_amount) }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
+            <h3>No orders yet</h3>
+            <a href="{{ url_for('shop_page') }}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

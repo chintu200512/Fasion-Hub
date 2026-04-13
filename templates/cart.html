@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}My Cart - FashionHub{% endblock %}
+
+{% block content %}
+<style>
+    .cart-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    .cart-table {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .cart-table th {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: left;
+    }
+    .cart-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .quantity-input {
+        width: 60px;
+        padding: 5px;
+        text-align: center;
+    }
+    .btn-remove {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .cart-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        text-align: right;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .btn-checkout {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        margin-top: 15px;
+    }
+    .empty-cart {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 12px;
+    }
+</style>
+
+<div class="cart-container">
+    <div class="cart-header">
+        <h2><i class="fas fa-shopping-cart"></i> My Cart</h2>
+    </div>
+    
+    {% if cart %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart %}
+            <tr data-product-id="{{ item.product_id }}">
+                <td>
+                    <img src="{{ url_for('static', filename='uploads/' + item.image) if item.image else 'https://via.placeholder.com/80' }}" 
+                         class="cart-item-image" alt="{{ item.name }}">
+                </td>
+                <td>{{ item.name }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>
+                    <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1" 
+                           onchange="updateQuantity('{{ item.product_id }}', this.value)">
+                </td>
+                <td class="subtotal">₹{{ item.subtotal }}</td>
+                <td>
+                    <button class="btn-remove" onclick="removeFromCart('{{ item.product_id }}')">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="cart-summary">
+        <h3>Total: ₹<span id="cartTotal">{{ total }}</span></h3>
+        <button class="btn-checkout" onclick="checkout()">
+            <i class="fas fa-credit-card"></i> Proceed to Checkout
+        </button>
+    </div>
+    
+    {% else %}
+    <div class="empty-cart">
+        <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add some products to your cart!</p>
+        <a href="/shop" class="btn btn-primary mt-3">Continue Shopping</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    async function updateQuantity(productId, quantity) {
+        try {
+            const res = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: productId, quantity: parseInt(quantity) })
+            });
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error updating cart:', error);
+        }
+    }
+    
+    async function removeFromCart(productId) {
+        if (!confirm('Remove this item from cart?')) return;
+        
+        try {
+            const res = await fetch(`/api/cart/remove/${productId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+        }
+    }
+    
+    function checkout() {
+        window.location.href = '/cart';
+    }
+</script>
+{% endblock %}

@@ -1,59 +1,28 @@
-// Main JavaScript file
+// Main JavaScript for FashionHub
 
-// Add to cart functionality
-function addToCart(productId, size, color, quantity = 1) {
-    fetch('/api/cart/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            size: size,
-            color: color,
-            quantity: quantity
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Product added to cart!', 'success');
-            updateCartCount();
-        } else {
-            if (data.message === 'Please login first') {
-                window.location.href = '/auth/login';
-            } else {
-                showNotification(data.message, 'error');
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Failed to add to cart', 'error');
-    });
+// Session Management
+async function checkSession() {
+    try {
+        const response = await axios.get('/api/session');
+        return response.data.logged_in;
+    } catch (error) {
+        console.error('Session check error:', error);
+        return false;
+    }
 }
 
-// Update cart count in navbar
-function updateCartCount() {
-    fetch('/api/cart/count')
-        .then(response => response.json())
-        .then(data => {
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount) {
-                cartCount.textContent = data.count;
-            }
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-// Show notification
-function showNotification(message, type = 'info') {
+// Notification System
+function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show`;
-    notification.style.position = 'fixed';
-    notification.style.top = '20px';
-    notification.style.right = '20px';
-    notification.style.zIndex = '9999';
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 250px;
+        animation: slideIn 0.3s ease;
+    `;
     notification.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -65,30 +34,66 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Update quantity in cart
-function updateQuantity(itemId, change) {
-    const quantityInput = document.getElementById(`quantity-${itemId}`);
-    let newQuantity = parseInt(quantityInput.value) + change;
-    
-    if (newQuantity < 1) newQuantity = 1;
-    
-    fetch(`/api/cart/update/${itemId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ quantity: newQuantity })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
+// Format Price
+function formatPrice(price) {
+    return new Intl.NumberFormat('en-IN').format(price);
+}
+
+// Validate Mobile Number
+function isValidMobile(mobile) {
+    return /^\d{10}$/.test(mobile);
+}
+
+// Validate Email
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Loading State
+function showLoading(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = '<div class="spinner"></div>';
+    }
+}
+
+function hideLoading(containerId, content) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = content;
+    }
+}
+
+// Image Preview
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" style="max-width: 200px; border-radius: 10px;">`;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Logout Function
+async function logout() {
+    try {
+        await axios.post('/api/logout');
+        window.location.href = '/login';
+    } catch (error) {
+        console.error('Logout error:', error);
+        showNotification('Error logging out', 'danger');
+    }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Add any initialization code here
-    console.log('Website loaded successfully');
+    // Auto-hide flash messages after 5 seconds
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
 });

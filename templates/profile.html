@@ -1,178 +1,158 @@
 {% extends "base.html" %}
 
-{% block title %}My Profile - FashionHub{% endblock %}
-
 {% block content %}
 <style>
     .profile-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-    }
-    .profile-card {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
         background: white;
         border-radius: 20px;
-        padding: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    .avatar {
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .profile-avatar {
         width: 100px;
         height: 100px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
         border-radius: 50%;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 20px;
     }
-    .avatar i {
+    .profile-avatar i {
         font-size: 3rem;
         color: white;
     }
-    .verified-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
+    .info-group {
+        margin-bottom: 20px;
+    }
+    .info-group label {
         font-weight: 600;
-        margin-left: 10px;
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
     }
-    .verified { background: #10b981; color: white; }
-    .unverified { background: #f59e0b; color: white; }
-    .info-row {
-        display: flex;
-        padding: 12px 0;
-        border-bottom: 1px solid #eee;
+    .info-group .value {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 10px;
     }
-    .info-label {
-        font-weight: 600;
-        width: 120px;
-        color: #555;
-    }
-    .info-value {
-        flex: 1;
-        color: #333;
-    }
-    .btn-save {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+    .edit-btn {
+        background: #667eea;
         color: white;
-        padding: 12px 30px;
         border: none;
-        border-radius: 40px;
-        font-weight: 600;
-        margin-top: 20px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        cursor: pointer;
     }
-    .edit-field {
+    .edit-input {
         width: 100%;
-        padding: 8px 12px;
+        padding: 10px;
         border: 1px solid #ddd;
-        border-radius: 8px;
+        border-radius: 10px;
     }
 </style>
 
 <div class="profile-container">
-    <div class="profile-card">
-        <div class="avatar">
+    <div class="profile-header">
+        <div class="profile-avatar">
             <i class="fas fa-user"></i>
         </div>
-        
-        <h2 class="text-center mb-4">{{ user.name }}</h2>
-        
-        <div id="alertMsg"></div>
-        
-        <div class="info-row">
-            <div class="info-label">Email:</div>
-            <div class="info-value">{{ user.email }}</div>
+        <h2>{{ user.name }}</h2>
+        <p class="text-muted">{{ user.email }}</p>
+    </div>
+    
+    <div id="alertMsg"></div>
+    
+    <div class="info-group">
+        <label>Phone Number</label>
+        <div id="phoneDisplay">
+            <span class="value">{{ user.phone or 'Not provided' }}</span>
+            <button class="edit-btn" onclick="editPhone()">Edit</button>
         </div>
-        
-        <div class="info-row">
-            <div class="info-label">Email Status:</div>
-            <div class="info-value">
-                {% if user.email_verified %}
-                    <span class="verified-badge verified"><i class="fas fa-check-circle"></i> Verified</span>
-                {% else %}
-                    <span class="verified-badge unverified"><i class="fas fa-clock"></i> Not Verified</span>
-                {% endif %}
-            </div>
+        <div id="phoneEdit" style="display:none;">
+            <input type="tel" id="phoneInput" class="edit-input" value="{{ user.phone or '' }}">
+            <button class="btn btn-sm btn-success mt-2" onclick="savePhone()">Save</button>
+            <button class="btn btn-sm btn-secondary mt-2" onclick="cancelPhone()">Cancel</button>
         </div>
-        
-        <div class="info-row">
-            <div class="info-label">Phone:</div>
-            <div class="info-value">
-                <span id="phoneDisplay">{{ user.phone or 'Not provided' }}</span>
-                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="editPhone()">Edit</button>
-                <input type="tel" id="phoneInput" class="edit-field" style="display:none;" value="{{ user.phone or '' }}">
-            </div>
+    </div>
+    
+    <div class="info-group">
+        <label>Delivery Address</label>
+        <div id="addressDisplay">
+            <span class="value">{{ user.address or 'Not provided' }}</span>
+            <button class="edit-btn" onclick="editAddress()">Edit</button>
         </div>
-        
-        <div class="info-row">
-            <div class="info-label">Address:</div>
-            <div class="info-value">
-                <span id="addressDisplay">{{ user.address or 'Not provided' }}</span>
-                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="editAddress()">Edit</button>
-                <textarea id="addressInput" class="edit-field" rows="2" style="display:none;">{{ user.address or '' }}</textarea>
-            </div>
+        <div id="addressEdit" style="display:none;">
+            <textarea id="addressInput" class="edit-input" rows="3">{{ user.address or '' }}</textarea>
+            <button class="btn btn-sm btn-success mt-2" onclick="saveAddress()">Save</button>
+            <button class="btn btn-sm btn-secondary mt-2" onclick="cancelAddress()">Cancel</button>
         </div>
-        
-        <div class="text-center">
-            <button class="btn-save" id="saveBtn" style="display:none;" onclick="saveProfile()">
-                <i class="fas fa-save"></i> Save Changes
-            </button>
-        </div>
+    </div>
+    
+    <div class="info-group">
+        <label>Member Since</label>
+        <div class="value">{{ user.created_at.strftime('%B %d, %Y') if user.created_at else '2024' }}</div>
+    </div>
+    
+    <div class="info-group">
+        <label>Total Orders</label>
+        <div class="value">{{ user.total_orders or 0 }} orders</div>
     </div>
 </div>
 
 <script>
-    let editingPhone = false;
-    let editingAddress = false;
-    
-    function editPhone() {
-        editingPhone = true;
-        document.getElementById('phoneDisplay').style.display = 'none';
-        document.getElementById('phoneInput').style.display = 'inline-block';
-        document.getElementById('saveBtn').style.display = 'inline-block';
-    }
-    
-    function editAddress() {
-        editingAddress = true;
-        document.getElementById('addressDisplay').style.display = 'none';
-        document.getElementById('addressInput').style.display = 'block';
-        document.getElementById('saveBtn').style.display = 'inline-block';
-    }
-    
-    async function saveProfile() {
-        const phone = editingPhone ? document.getElementById('phoneInput').value : document.getElementById('phoneDisplay').innerText;
-        const address = editingAddress ? document.getElementById('addressInput').value : document.getElementById('addressDisplay').innerText;
-        
-        try {
-            const res = await axios.post('/api/profile/update', { phone, address });
-            if (res.data.success) {
-                showAlert('Profile updated successfully!', 'success');
-                
-                if (editingPhone) {
-                    document.getElementById('phoneDisplay').innerText = phone || 'Not provided';
-                    document.getElementById('phoneDisplay').style.display = 'inline';
-                    document.getElementById('phoneInput').style.display = 'none';
-                }
-                if (editingAddress) {
-                    document.getElementById('addressDisplay').innerText = address || 'Not provided';
-                    document.getElementById('addressDisplay').style.display = 'inline';
-                    document.getElementById('addressInput').style.display = 'none';
-                }
-                
-                editingPhone = false;
-                editingAddress = false;
-                document.getElementById('saveBtn').style.display = 'none';
-            }
-        } catch (error) {
-            showAlert('Failed to update profile', 'danger');
+function editPhone() {
+    document.getElementById('phoneDisplay').style.display = 'none';
+    document.getElementById('phoneEdit').style.display = 'block';
+}
+
+function cancelPhone() {
+    document.getElementById('phoneDisplay').style.display = 'block';
+    document.getElementById('phoneEdit').style.display = 'none';
+}
+
+function editAddress() {
+    document.getElementById('addressDisplay').style.display = 'none';
+    document.getElementById('addressEdit').style.display = 'block';
+}
+
+function cancelAddress() {
+    document.getElementById('addressDisplay').style.display = 'block';
+    document.getElementById('addressEdit').style.display = 'none';
+}
+
+async function savePhone() {
+    const phone = document.getElementById('phoneInput').value;
+    await updateProfile({ phone });
+}
+
+async function saveAddress() {
+    const address = document.getElementById('addressInput').value;
+    await updateProfile({ address });
+}
+
+async function updateProfile(data) {
+    try {
+        const response = await axios.post('/api/profile/update', data);
+        if (response.data.success) {
+            showAlert('Profile updated successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
         }
+    } catch (error) {
+        showAlert('Error updating profile', 'danger');
     }
-    
-    function showAlert(message, type) {
-        const container = document.getElementById('alertMsg');
-        container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-        setTimeout(() => container.innerHTML = '', 3000);
-    }
+}
+
+function showAlert(message, type) {
+    const container = document.getElementById('alertMsg');
+    container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    setTimeout(() => container.innerHTML = '', 3000);
+}
 </script>
 {% endblock %}
