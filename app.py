@@ -870,7 +870,7 @@ def get_orders():
 
         user_id = str(session['user_id'])
         
-        orders = list(db.orders.find({"user_id": user_id}))
+        orders = list(orders_collection.find({"user_id": user_id}).sort('created_at', -1))
         
         print(f"FROM API: Found {len(orders)} orders for user {user_id}")
 

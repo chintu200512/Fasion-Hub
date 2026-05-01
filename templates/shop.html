@@ -411,6 +411,7 @@
     }
 </style>
 
+
 <div class="shop-container">
     <h2 class="shop-title">All Products</h2>
     
@@ -506,6 +507,13 @@ alt="{{ product.name }}">
         <i class="fas fa-shopping-bag"></i> Buy Now
     </button>
 </div>
+{% if session.get('is_admin') %}
+<div class="admin-actions text-center mt-4">
+    <a href="/admin/add-product" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add New Product
+    </a>
+</div>
+{% endif %}
             </div>
         </div>
         {% endfor %}
