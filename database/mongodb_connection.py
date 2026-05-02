@@ -6,7 +6,7 @@ class MongoDBAtlas:
     _db = None
     
     # Update these with your actual Atlas credentials
-    MONGO_URI = "mongodb+srv://narendra200512_db_user:<chintu>@fasion-hub.bxrcrnb.mongodb.net/?appName=fasion-hub"
+    MONGO_URI = "mongodb+srv://narendra200512_db_user:chintu@fasion-hub.bxrcrnb.mongodb.net/?appName=fasion-hub"
     DB_NAME = "fasion-hub"
     
     @classmethod
